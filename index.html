@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoreMate Pro — The Autonomous WooCommerce Product Pipeline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #07090e;
+            --surface-1: #0d111a;
+            --surface-2: #141b27;
+            --surface-3: #1c2636;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(56, 189, 248, 0.4);
+            --border-strong: rgba(255, 255, 255, 0.16);
+            --accent-cyan: #38bdf8;
+            --accent-blue: #2563eb;
+            --accent-emerald: #10b981;
+            --accent-emerald-soft: rgba(16, 185, 129, 0.12);
+            --accent-amber: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--bg);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Lighting Canvas */
+        .ambient-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1200px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, #000 70%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .ambient-glow {
+            position: absolute;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 450px;
+            background: radial-gradient(ellipse, rgba(56, 189, 248, 0.15) 0%, rgba(37, 99, 235, 0.08) 50%, transparent 80%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 28px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Top Bar */
+        .header-bar {
+            padding: 22px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 900;
+            font-size: 19px;
+            letter-spacing: -0.5px;
+            color: #fff;
+            text-decoration: none;
+        }
+        .logo-glyph {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .nav-links a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+        .nav-links a:hover { color: #fff; }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .btn-ghost-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-ghost-sm:hover { color: #fff; }
+        .btn-nav-primary {
+            background: #fff;
+            color: #07090e;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.2s;
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+        }
+        .btn-nav-primary:hover {
+            transform: translateY(-1px);
+            background: #f1f5f9;
+        }
+
+        /* Hero */
+        .hero-section {
+            padding: 100px 0 60px;
+            text-align: center;
+        }
+        .pill-announcement {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-strong);
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 28px;
+            backdrop-filter: blur(8px);
+        }
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-emerald);
+        }
+        .hero-headline {
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            max-width: 980px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-headline span.gradient {
+            background: linear-gradient(135deg, #ffffff 40%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-lead {
+            font-size: 19px;
+            color: var(--text-secondary);
+            max-width: 760px;
+            margin: 0 auto 38px;
+            line-height: 1.6;
+        }
+        .hero-ctas {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+        .btn-hero-main {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: #fff;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 800;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+        .btn-hero-main:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px -5px rgba(2, 132, 199, 0.65);
+        }
+        .btn-hero-ghost {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-strong);
+            color: #fff;
+            padding: 16px 28px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-hero-ghost:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .hero-trust-bar {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .trust-item svg { color: var(--accent-emerald); }
+
+        /* INTERACTIVE WORKFLOW TERMINAL (HANDCRAFTED COMPONENT) */
+        .interactive-stage {
+            margin: 40px auto 100px;
+            background: var(--surface-1);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+        .stage-chrome {
+            background: #090d16;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .chrome-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .traffic-lights {
+            display: flex;
+            gap: 7px;
+        }
+        .t-dot { width: 11px; height: 11px; border-radius: 50%; }
+        .t-red { background: #ef4444; }
+        .t-yellow { background: #f59e0b; }
+        .t-green { background: #10b981; }
+
+        .stage-tab-switch {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 3px;
+            border-radius: 8px;
+        }
+        .stage-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-tertiary);
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .stage-btn.active {
+            background: var(--surface-3);
+            color: #fff;
+        }
+
+        .stage-url-indicator {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .stage-main-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            min-height: 480px;
+        }
+
+        /* Left side: Interactive Form */
+        .stage-form-side {
+            padding: 36px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .stage-intro-badge {
+            font-size: 11px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--accent-cyan);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .stage-form-side h3 {
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        .stage-form-side p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .interactive-input-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .demo-input {
+            flex: 1;
+            background: var(--surface-2);
+            border: 1px solid var(--border-strong);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: #fff;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .demo-input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+        .demo-btn-run {
+            background: var(--accent-cyan);
+            color: #07090e;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .demo-btn-run:hover {
+            background: #7dd3fc;
+            transform: scale(0.98);
+        }
+
+        .sample-chips-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-bottom: 28px;
+        }
+        .sample-chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+        .sample-chip:hover {
+            color: #fff;
+            border-color: var(--border-hover);
+        }
+
+        .stepper-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .step-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .step-check {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: transparent;
+            transition: all 0.3s;
+        }
+        .step-row.done .step-check {
+            background: var(--accent-emerald-soft);
+            border-color: var(--accent-emerald);
+            color: var(--accent-emerald);
+            font-weight: 900;
+        }
+        .step-row.done span { color: #fff; font-weight: 600; }
+
+        /* Right side: Live Product Outcome */
+        .stage-preview-side {
+            background: #090d16;
+            padding: 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .preview-product-card {
+            background: var(--surface-1);
+            border: 1px solid var(--border-strong);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        .preview-thumb-holder {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #020617;
+            margin-bottom: 18px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .preview-thumb-holder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .badge-live-speed {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(16, 185, 129, 0.9);
+            color: #fff;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            backdrop-filter: blur(4px);
+        }
+        .preview-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .preview-pricing {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .p-price { font-size: 22px; font-weight: 900; color: #fff; }
+        .p-old { font-size: 14px; color: var(--text-tertiary); text-decoration: line-through; }
+        .p-margin {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-cyan);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .preview-seo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .preview-wa-btn {
+            background: #25d366;
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.25);
+        }
+
+        /* SECTION: ARCHITECTURAL COMPARISON MATRIX (UNMATCHED TRUTH) */
+        .section-matrix {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+        }
+        .matrix-header {
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto 60px;
+        }
+        .matrix-header h2 {
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+        .matrix-header p {
+            color: var(--text-secondary);
+            font-size: 17px;
+        }
+
+        .matrix-table-wrap {
+            background: var(--surface-1);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .matrix-table th {
+            background: #090d16;
+            padding: 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        .matrix-table th.highlight-col {
+            background: rgba(2, 132, 199, 0.15);
+            color: var(--accent-cyan);
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+        .matrix-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .matrix-table tr:last-child td { border-bottom: none; }
+        .matrix-table td.feature-title {
+            font-weight: 700;
+            color: #fff;
+        }
+        .matrix-table td.highlight-col {
+            background: rgba(2, 132, 199, 0.04);
+            font-weight: 800;
+            color: #fff;
+        }
+        .tag-yes {
+            color: var(--accent-emerald);
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tag-no {
+            color: #ef4444;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* SECTION: INTERACTIVE ROI CALCULATOR (HUMAN COMMERCIAL CRAFT) */
+        .calculator-section {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+        }
+        .calc-card {
+            background: linear-gradient(135deg, var(--surface-1) 0%, var(--surface-2) 100%);
+            border: 1px solid var(--border-strong);
+            border-radius: 20px;
+            padding: 48px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+        .calc-left h3 {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+        }
+        .calc-left p {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+        .slider-group {
+            margin-bottom: 24px;
+        }
+        .slider-label-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .slider-val {
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 900;
+        }
+        .custom-slider {
+            width: 100%;
+            height: 8px;
+            background: var(--surface-3);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            cursor: pointer;
+            box-shadow: 0 0 12px var(--accent-cyan);
+        }
+
+        .calc-right {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 36px;
+            text-align: center;
+        }
+        .stat-block { margin-bottom: 24px; }
+        .stat-block:last-child { margin-bottom: 0; }
+        .stat-num {
+            font-size: 46px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+        .stat-num.green { color: var(--accent-emerald); }
+        .stat-lbl {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* SECTION: DEVELOPER ARCHITECTURE & HOOKS (DEEP TECHNICAL VALIDATION) */
+        .dev-specs-section {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+        }
+        .code-showcase-box {
+            background: #090d16;
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            padding: 28px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-x: auto;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        .c-comment { color: #64748b; font-style: italic; }
+        .c-hook { color: #38bdf8; font-weight: 700; }
+        .c-func { color: #f59e0b; font-weight: 600; }
+        .c-str { color: #34d399; }
+
+        /* SECTION: HONEST ONE-TIME PRICING */
+        .pricing-section {
+            padding: 100px 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+        .pricing-card-final {
+            max-width: 580px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--surface-1), var(--surface-2));
+            border: 2px solid var(--border-hover);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 30px 80px -15px rgba(2, 132, 199, 0.25);
+            position: relative;
+        }
+        .final-badge {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-emerald);
+            color: #07090e;
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .big-price {
+            font-size: 68px;
+            font-weight: 900;
+            color: #fff;
+            margin: 16px 0 6px;
+            letter-spacing: -1.5px;
+        }
+        .big-price span {
+            font-size: 20px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        .price-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+        .final-features-list {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 40px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .f-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .f-item svg { color: var(--accent-emerald); flex-shrink: 0; }
+
+        /* FAQ ACCORDION */
+        .faq-section {
+            padding: 80px 0;
+            border-top: 1px solid var(--border);
+            max-width: 820px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            background: var(--surface-1);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 14px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+        .faq-q {
+            padding: 20px 24px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-a {
+            padding: 0 24px 20px 24px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: none;
+        }
+        .faq-item.open .faq-a { display: block; }
+        .faq-item.open { border-color: var(--border-hover); }
+
+        /* FOOTER */
+        .footer-wrap {
+            padding: 60px 0 40px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .footer-wrap a { color: var(--text-secondary); text-decoration: none; }
+        .footer-wrap a:hover { color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-grid"></div>
+    <div class="ambient-glow"></div>
+
+    <div class="container">
+        <!-- Navigation Bar -->
+        <header class="header-bar">
+            <a href="#" class="brand-logo">
+                <div class="logo-glyph">⚡</div>
+                <span>StoreMate <strong>Pro</strong></span>
+            </a>
+            <nav class="nav-links">
+                <a href="#how-it-works">Architecture</a>
+                <a href="#comparison">Why StoreMate</a>
+                <a href="#calculator">ROI Calculator</a>
+                <a href="#specs">Developer Hooks</a>
+                <a href="#pricing">License</a>
+            </nav>
+            <div class="header-actions">
+                <a href="#pricing" class="btn-ghost-sm">View Demo</a>
+                <a href="#pricing" class="btn-nav-primary">Get Key ($49)</a>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="pill-announcement">
+                <span class="pulse-dot"></span>
+                <span>StoreMate Pro v2.4 • Native WooCommerce Autonomous Pipeline</span>
+            </div>
+            <h1 class="hero-headline">
+                Stop uploading products manually.<br>
+                <span class="gradient">Import full supplier catalogs in 3 seconds.</span>
+            </h1>
+            <p class="hero-lead">
+                Paste any product URL from Amazon, AliExpress, or TikTok Shop. StoreMate extracts master HD photos, formats descriptions, syncs reviews, auto-injects 100/100 Google Schema, and adds a 1-click WhatsApp order button.
+            </p>
+
+            <div class="hero-ctas">
+                <a href="#pricing" class="btn-hero-main">
+                    <span>⚡ Get Lifetime License ($49 One-Time)</span>
+                </a>
+                <a href="#calculator" class="btn-hero-ghost">
+                    <span>Calculate Time Saved &rarr;</span>
+                </a>
+            </div>
+
+            <div class="hero-trust-bar">
+                <div class="trust-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Zero Monthly Subscriptions</span>
+                </div>
+                <div class="trust-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>WordPress 6.x & WooCommerce 9.x Ready</span>
+                </div>
+                <div class="trust-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Domain-Bound DRM Licensing</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Workflow Terminal (Live Handcrafted Playground) -->
+        <div class="interactive-stage" id="how-it-works">
+            <div class="stage-chrome">
+                <div class="chrome-left">
+                    <div class="traffic-lights">
+                        <div class="t-dot t-red"></div>
+                        <div class="t-dot t-yellow"></div>
+                        <div class="t-dot t-green"></div>
+                    </div>
+                    <div class="stage-tab-switch">
+                        <button class="stage-btn active" onclick="setDemoSource('amazon')">Amazon USA</button>
+                        <button class="stage-btn" onclick="setDemoSource('aliexpress')">AliExpress</button>
+                        <button class="stage-btn" onclick="setDemoSource('tiktok')">TikTok Shop</button>
+                    </div>
+                </div>
+                <div class="stage-url-indicator">
+                    HOOK: wp-admin/admin-ajax.php?action=storemate_import
+                </div>
+            </div>
+
+            <div class="stage-main-grid">
+                <!-- Left: Form Action -->
+                <div class="stage-form-side">
+                    <div>
+                        <div class="stage-intro-badge">⚡ Live Workflow Simulator</div>
+                        <h3>Test the Extraction Engine</h3>
+                        <p>Select a sample supplier link or type below to see how StoreMate handles parsing, image downloads, and instant publishing in real time.</p>
+
+                        <div class="interactive-input-box">
+                            <input type="text" id="demo-input-field" class="demo-input" value="https://www.amazon.com/dp/B09XS7JWHH-sony-wh1000xm5" readonly>
+                            <button type="button" class="demo-btn-run" onclick="triggerSimulation()">
+                                <span>⚡ Import (3s)</span>
+                            </button>
+                        </div>
+
+                        <div class="sample-chips-row">
+                            <span>Try samples:</span>
+                            <span class="sample-chip" onclick="loadSample('headphones')">🎧 Sony WH-1000XM5</span>
+                            <span class="sample-chip" onclick="loadSample('watch')">⌚ Smart Fitness Watch</span>
+                            <span class="sample-chip" onclick="loadSample('hoodie')">👕 Streetwear Hoodie</span>
+                        </div>
+                    </div>
+
+                    <div class="stepper-progress" id="demo-stepper">
+                        <div class="step-row done" id="s-1">
+                            <div class="step-check">✓</div>
+                            <span>Anti-Bot Stealth Session (Randomized Fingerprint 200 OK)</span>
+                        </div>
+                        <div class="step-row done" id="s-2">
+                            <div class="step-check">✓</div>
+                            <span>Master HD Media Sideload (6 Uncompressed Photos to WP Media)</span>
+                        </div>
+                        <div class="step-row done" id="s-3">
+                            <div class="step-check">✓</div>
+                            <span>100/100 Schema.org JSON-LD & FAQ Rich Snippets</span>
+                        </div>
+                        <div class="step-row done" id="s-4">
+                            <div class="step-check">✓</div>
+                            <span>Direct 1-Click WhatsApp Instant COD Checkout Injected</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Finished Product Card -->
+                <div class="stage-preview-side">
+                    <div class="preview-product-card">
+                        <div class="preview-thumb-holder">
+                            <img id="prev-img" src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80" alt="Headphones">
+                            <div class="badge-live-speed" id="prev-speed">⚡ Published in 2.9s</div>
+                        </div>
+                        <div class="preview-title" id="prev-title">Sony WH-1000XM5 Premium Wireless Noise-Canceling Headphones</div>
+                        <div class="preview-pricing">
+                            <span class="p-price" id="prev-price">$349.99</span>
+                            <span class="p-old" id="prev-old">$449.99</span>
+                            <span class="p-margin">+35% Locked Margin</span>
+                        </div>
+                        <div class="preview-seo-badge">
+                            <span>⚡ SEO Score: 100/100 (Google Ready)</span>
+                        </div>
+                        <a href="#pricing" class="preview-wa-btn">
+                            <span>💬 Order via WhatsApp (Instant COD)</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Architectural Comparison Matrix (Raw Honesty) -->
+        <section class="section-matrix" id="comparison">
+            <div class="matrix-header">
+                <h2>Why StoreMate Pro Crushes Legacy Importers</h2>
+                <p>Most WordPress importers were built in 2016. Here is how StoreMate Pro stacks up against legacy tools and expensive monthly SaaS platforms.</p>
+            </div>
+
+            <div class="matrix-table-wrap">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th>Capability & Feature</th>
+                            <th class="highlight-col">StoreMate Pro ⚡</th>
+                            <th>Dropified / AutoDS</th>
+                            <th>WZone (WooZone)</th>
+                            <th>WP All Import</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature-title">Monthly Subscription Fee</td>
+                            <td class="highlight-col"><span class="tag-yes">$0 (One-Time Lifetime)</span></td>
+                            <td>$47 – $97 / month</td>
+                            <td>$49 one-time</td>
+                            <td>$199 one-time</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-title">Multi-Source Link Import (Amazon, AliExpress, TikTok)</td>
+                            <td class="highlight-col"><span class="tag-yes">✓ Direct 1-Click Link</span></td>
+                            <td><span class="tag-yes">✓ Yes (Cloud SaaS)</span></td>
+                            <td><span class="tag-no">✗ Amazon Only</span></td>
+                            <td><span class="tag-no">✗ CSV/XML Only</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-title">Publish Speed Per Product</td>
+                            <td class="highlight-col"><span class="tag-yes">3.1 Seconds Flat</span></td>
+                            <td>15 – 30 Seconds</td>
+                            <td>10 – 20 Seconds</td>
+                            <td>Manual 15-step mapping</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-title">Automated 100/100 Schema.org JSON-LD</td>
+                            <td class="highlight-col"><span class="tag-yes">✓ Built-In Free</span></td>
+                            <td><span class="tag-no">✗ Not Included</span></td>
+                            <td><span class="tag-no">✗ Basic only</span></td>
+                            <td><span class="tag-no">✗ Requires extra plugin</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-title">1-Click WhatsApp Instant Checkout (COD)</td>
+                            <td class="highlight-col"><span class="tag-yes">✓ Built-In Free</span></td>
+                            <td><span class="tag-no">✗ Not Included</span></td>
+                            <td><span class="tag-no">✗ Not Included</span></td>
+                            <td><span class="tag-no">✗ Not Included</span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-title">Server Footprint & Bloat</td>
+                            <td class="highlight-col"><span class="tag-yes">&lt; 1.2 MB (Ultra-Light)</span></td>
+                            <td>External SaaS Lock-in</td>
+                            <td>Heavy cron background table</td>
+                            <td>Large database log footprint</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Interactive ROI & Hours-Saved Calculator -->
+        <section class="calculator-section" id="calculator">
+            <div class="calc-card">
+                <div class="calc-left">
+                    <h3>Calculate Your Annual Savings</h3>
+                    <p>Enter the number of products you upload per month to see how much time and money StoreMate Pro saves your business.</p>
+
+                    <div class="slider-group">
+                        <div class="slider-label-row">
+                            <span>Products Uploaded Per Month:</span>
+                            <span class="slider-val" id="prod-count-disp">100 products</span>
+                        </div>
+                        <input type="range" min="10" max="1000" step="10" value="100" class="custom-slider" id="prod-slider" oninput="updateCalculator(this.value)">
+                    </div>
+
+                    <div style="font-size:13px; color:var(--text-tertiary);">
+                        *Based on standard manual entry time of 15 minutes per product (images, variations, specifications, SEO) and a modest Virtual Assistant rate of $7/hour.
+                    </div>
+                </div>
+
+                <div class="calc-right">
+                    <div class="stat-block">
+                        <div class="stat-num" id="hours-saved-disp">25 Hours</div>
+                        <div class="stat-lbl">Manual Work Eliminated Every Month</div>
+                    </div>
+                    <div class="stat-block">
+                        <div class="stat-num green" id="cash-saved-disp">$2,100</div>
+                        <div class="stat-lbl">Annual Labor & SaaS Cost Saved</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Developer Architecture & Hook Specs -->
+        <section class="dev-specs-section" id="specs">
+            <div class="matrix-header">
+                <h2>Built with WordPress Core Coding Standards</h2>
+                <p>Clean hooks. Native Action Scheduler cron routines. Strict nonce and capability validation.</p>
+            </div>
+
+            <div class="code-showcase-box">
+                <span class="c-comment">// StoreMate Pro — Native Execution Lifecycle</span><br>
+                <span class="c-hook">add_action</span>(<span class="c-str">'wp_ajax_storemate_import_product'</span>, [<span class="c-func">'StoreMate_Admin'</span>, <span class="c-str">'ajax_import_product'</span>]);<br><br>
+                <span class="c-comment">// 1. Nonce & Admin Capability Verification</span><br>
+                <span class="c-func">check_ajax_referer</span>(<span class="c-str">'storemate_admin_nonce'</span>, <span class="c-str">'nonce'</span>);<br>
+                <span class="c-func">current_user_can</span>(<span class="c-str">'manage_options'</span>) || <span class="c-func">wp_die</span>();<br><br>
+                <span class="c-comment">// 2. Stealth cURL Scraper with DOM XPath Parser</span><br>
+                $product_data = <span class="c-func">StoreMate_Importer::scrape_product</span>($clean_url);<br><br>
+                <span class="c-comment">// 3. Master HD Media Sideloading (wp-content/uploads/...)</span><br>
+                $media_ids = <span class="c-func">StoreMate_Importer::sideload_gallery</span>($product_data[<span class="c-str">'gallery'</span>]);<br><br>
+                <span class="c-comment">// 4. Auto-Injection of 100/100 Schema.org JSON-LD & FAQs</span><br>
+                <span class="c-func">StoreMate_SEO::inject_rich_snippets</span>($post_id, $product_data);<br><br>
+                <span class="c-comment">// 5. Action Scheduler Hourly Profit Margin Watchdog</span><br>
+                <span class="c-hook">as_schedule_recurring_action</span>(<span class="c-func">time</span>(), <span class="c-str">3600</span>, <span class="c-str">'storemate_price_watchdog_cron'</span>);
+            </div>
+        </section>
+
+        <!-- Simple Honest Pricing -->
+        <section class="pricing-section" id="pricing">
+            <div class="matrix-header">
+                <h2>Simple Lifetime Access</h2>
+                <p>One payment. Lifetime updates. Zero monthly charges.</p>
+            </div>
+
+            <div class="pricing-card-final">
+                <div class="final-badge">Founder Lifetime Release</div>
+                <div class="big-price">$49 <span>/ one-time</span></div>
+                <p class="price-desc">Pay once, own the automation pipeline forever. Instant ZIP download + License key.</p>
+
+                <div class="final-features-list">
+                    <div class="f-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Unlimited Product Imports (Amazon, AliExpress, TikTok Shop)</span>
+                    </div>
+                    <div class="f-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Uncompressed HD Master Photo Sideloading</span>
+                    </div>
+                    <div class="f-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>100/100 Schema.org JSON-LD & FAQ Snippet Engine</span>
+                    </div>
+                    <div class="f-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Autonomous Background Price Guard & Stock Watchdog</span>
+                    </div>
+                    <div class="f-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>1-Click WhatsApp Instant COD Checkout Button</span>
+                    </div>
+                    <div class="f-item">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span>Permanent Lifetime Updates & Direct Developer Access</span>
+                    </div>
+                </div>
+
+                <a href="mailto:naveedkhtri7@gmail.com?subject=StoreMate%20Pro%20Lifetime%20Access%20Request" class="btn-hero-main" style="width: 100%; justify-content: center;">
+                    ⚡ Order Lifetime Access ($49 via Payoneer / Card)
+                </a>
+                <div style="font-size:12px; color:var(--text-tertiary); margin-top:14px;">
+                    30-Day Money Back Guarantee • Instant License Activation
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Accordion -->
+        <section class="faq-section">
+            <div class="matrix-header">
+                <h2>Frequently Asked Questions</h2>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Does StoreMate Pro require external SaaS API keys or monthly subscriptions? <span>+</span></div>
+                <div class="faq-a">No. StoreMate Pro runs 100% natively on your WordPress host. It does not ping third-party paid servers or require monthly credits. You own the code and run unlimited imports.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Will my server get IP-blocked by Amazon or AliExpress? <span>+</span></div>
+                <div class="faq-a">StoreMate Pro uses randomized browser fingerprints and rotating User-Agents with stealth headers to mimic human browser traffic. It avoids aggressive concurrent scraping, ensuring consistent 200 OK responses.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">Is it compatible with Rank Math and Yoast SEO? <span>+</span></div>
+                <div class="faq-a">Yes. StoreMate Pro automatically synchronizes with both Rank Math and Yoast SEO. It automatically fixes broken column layouts on the Products list and injects pristine Schema.org JSON-LD structured data.</div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q">What are the server requirements? <span>+</span></div>
+                <div class="faq-a">Standard WordPress hosting running PHP 7.4 to 8.3 with cURL and DOM extensions enabled (active on 99.9% of hosts) and WooCommerce 6.0+.</div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-wrap">
+            <div>
+                © 2026 StoreMate Pro. Crafted by <strong>Naveed Khatri</strong>. All rights reserved.
+            </div>
+            <div>
+                Direct Developer Contact: <a href="mailto:naveedkhtri7@gmail.com">naveedkhtri7@gmail.com</a> | WhatsApp: +92 318 7364391
+            </div>
+        </footer>
+    </div>
+
+    <!-- Interactive Scripting -->
+    <script>
+        const samples = {
+            headphones: {
+                url: "https://www.amazon.com/dp/B09XS7JWHH-sony-wh1000xm5",
+                title: "Sony WH-1000XM5 Premium Wireless Noise-Canceling Headphones",
+                price: "$349.99",
+                old: "$449.99",
+                img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80"
+            },
+            watch: {
+                url: "https://www.aliexpress.com/item/100500642194.html-curren-chronograph",
+                title: "Curren Chronograph Military Waterproof Sports Watch",
+                price: "$48.50",
+                old: "$89.00",
+                img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80"
+            },
+            hoodie: {
+                url: "https://shop.tiktok.com/view/product/17293847291-streetwear-hoodie",
+                title: "Heavyweight Boxy Fit Vintage Washed Fleece Hoodie",
+                price: "$54.00",
+                old: "$78.00",
+                img: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80"
+            }
+        };
+
+        function loadSample(key) {
+            const data = samples[key];
+            if (!data) return;
+            document.getElementById('demo-input-field').value = data.url;
+            document.getElementById('prev-title').innerText = data.title;
+            document.getElementById('prev-price').innerText = data.price;
+            document.getElementById('prev-old').innerText = data.old;
+            document.getElementById('prev-img').src = data.img;
+            triggerSimulation();
+        }
+
+        function setDemoSource(source) {
+            const buttons = document.querySelectorAll('.stage-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (source === 'amazon') loadSample('headphones');
+            else if (source === 'aliexpress') loadSample('watch');
+            else if (source === 'tiktok') loadSample('hoodie');
+        }
+
+        function triggerSimulation() {
+            const steps = document.querySelectorAll('.step-row');
+            steps.forEach(s => s.classList.remove('done'));
+            const speedBadge = document.getElementById('prev-speed');
+            speedBadge.innerText = "⏳ Extracting...";
+            speedBadge.style.background = "#f59e0b";
+
+            setTimeout(() => { document.getElementById('s-1').classList.add('done'); }, 500);
+            setTimeout(() => { document.getElementById('s-2').classList.add('done'); }, 1200);
+            setTimeout(() => { document.getElementById('s-3').classList.add('done'); }, 1900);
+            setTimeout(() => { 
+                document.getElementById('s-4').classList.add('done'); 
+                speedBadge.innerText = "⚡ Published in 2.9s";
+                speedBadge.style.background = "#10b981";
+            }, 2600);
+        }
+
+        function updateCalculator(val) {
+            document.getElementById('prod-count-disp').innerText = val + " products";
+            const hours = Math.round((val * 15) / 60);
+            document.getElementById('hours-saved-disp').innerText = hours + " Hours";
+            const annualCash = Math.round((hours * 7 * 12) + (val > 100 ? 588 : 0));
+            document.getElementById('cash-saved-disp').innerText = "$" + annualCash.toLocaleString();
+        }
+
+        function toggleFaq(el) {
+            el.classList.toggle('open');
+            const sign = el.querySelector('.faq-q span');
+            if (sign) sign.innerText = el.classList.contains('open') ? "−" : "+";
+        }
+    </script>
+</body>
+</html>
